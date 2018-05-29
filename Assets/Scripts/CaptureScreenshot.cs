@@ -5,7 +5,7 @@ using UnityEngine;
 public class CaptureScreenshot : MonoBehaviour
 {
 
-//这个方法，截取的是某一帧时整个游戏的画面，或者说是全屏截图吧。
+// 这个方法，截取的是某一帧时整个游戏的画面，或者说是全屏截图吧。
 //a、不能针对某一个相机（camera）的画面，进行截图。
 //b、对局部画面截图，实现起来不方便，效率也低，不建议在项目中使用：
 //虽然CaptureScreenshot这个方法呢，本身是不要做到这一点的。但是我们可以走曲线救国的路线来实现它。
