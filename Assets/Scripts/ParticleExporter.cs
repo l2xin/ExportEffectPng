@@ -10,28 +10,25 @@ public class ParticleExporter : MonoBehaviour
     public string folder = "PNG_Animations";
 
     public int frameRate = 25;                  // export frame rate 导出帧率，设置Time.captureFramerate会忽略真实时间，直接使用此帧率
-    public float frameCount = 100;              // export frame count 导出帧的数目，100帧则相当于导出5秒钟的光效时间。由于导出每一帧的时间很长，所以导出时间会远远长于直观的光效播放时间
-    public int screenWidth = 960;               // not use 暂时没用，希望可以直接设置屏幕的大小（即光效画布的大小）
+    public float frameCount = 5;              // export frame count 导出帧的数目，100帧则相当于导出5秒钟的光效时间。由于导出每一帧的时间很长，所以导出时间会远远长于直观的光效播放时间
+    public int screenWidth = 1136;               // not use 暂时没用，希望可以直接设置屏幕的大小（即画布的大小）
     public int screenHeight = 640;
     public Vector3 cameraPosition = Vector3.zero;
     public Vector3 cameraRotation = Vector3.zero;
 
-    private string realFolder = ""; // real folder where the output files will be
-    private float originaltimescaleTime; // track the original time scale so we can freeze the animation between frames
+    private string realFolder = "";
+    private float originaltimescaleTime;
     private float currentTime = 0;
     private bool over = false;
     private int currentIndex = 0;
-    private Camera exportCamera;    // camera for export 导出光效的摄像机，使用RenderTexture
+    private Camera exportCamera;    // camera for export 导出的摄像机，使用RenderTexture
 
     public void Start()
     {
-        // set frame rate
         Time.captureFramerate = frameRate;
 
-        // Create a folder that doesn't exist yet. Append number if necessary.
         realFolder = Path.Combine(folder, name);
 
-        // Create the folder
         if( !Directory.Exists(realFolder) )
         {
             Directory.CreateDirectory(realFolder);
@@ -81,10 +78,8 @@ public class ParticleExporter : MonoBehaviour
 
     IEnumerator CaptureFrame()
     {
-        // Stop time
         Time.timeScale = 0;
-        // Yield to next frame and then start the rendering
-        // this is important, otherwise will have error
+       
         yield return new WaitForEndOfFrame();
 
         string filename = String.Format("{0}/{1:D04}.png", realFolder, ++currentIndex);
@@ -115,7 +110,6 @@ public class ParticleExporter : MonoBehaviour
         {
             Texture2D outputtex = new Texture2D(width, height, TextureFormat.ARGB32, false);
 
-            // we need to check alpha ourselves,because particle use additive shader
             // Create Alpha from the difference between black and white camera renders
             for( int y = 0; y < outputtex.height; ++y )
             { // each row
@@ -164,14 +158,11 @@ public class ParticleExporter : MonoBehaviour
         }
     }
 
-    // Get the texture from the screen, render all or only half of the camera
     private Texture2D GetTex2D()
     {
-        // Create a texture the size of the screen, RGB24 format
         int width = Screen.width;
         int height = Screen.height;
         Texture2D tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
-        // Read screen contents into the texture
         tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
         tex.Apply();
         return tex;
