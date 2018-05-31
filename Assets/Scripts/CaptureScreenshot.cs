@@ -39,11 +39,9 @@ public class CaptureScreenshot : MonoBehaviour
 
     //2、这第二个截图的方法是，使用Texture2d类下的相关方法，也可实现截图功能。
     //截全屏：
-    //CaptureScreenshotRect( new Rect(Screen.width*0f, Screen.height*0f, Screen.width*1f, Screen.height*1f));
+    //CaptureScreenshot2( new Rect(Screen.width*0f, Screen.height*0f, Screen.width*1f, Screen.height*1f));
     //截中间4分之1:
-    //CaptureScreenshotRect( new Rect(Screen.width*0.25f, Screen.height*0.25f, Screen.width*0.5f, Screen.height*0.5f));
-
-    //注意：读取的是整个Unity Game视图的截屏，没什么意义
+    //CaptureScreenshot2( new Rect(Screen.width*0.25f, Screen.height*0.25f, Screen.width*0.5f, Screen.height*0.5f));
 
     /// <summary>  
     /// CaptureScreenshotRect  
@@ -55,7 +53,7 @@ public class CaptureScreenshot : MonoBehaviour
         Texture2D screenShot = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGB24, false);
 
         // 读取屏幕像素信息并存储为纹理数据，  
-        screenShot.ReadPixels(rect, 0, 0, false);
+        screenShot.ReadPixels(rect, 0, 0);
         screenShot.Apply();
 
         // 然后将这些纹理数据，成一个png图片文件  
@@ -64,12 +62,14 @@ public class CaptureScreenshot : MonoBehaviour
         System.IO.File.WriteAllBytes(filename, bytes);
         Debug.Log(string.Format("截屏了一张图片: {0}", filename));
 
-        AssetDatabase.Refresh();
-
         return screenShot;
     }
 
     //3、这第三个方法，可以针对某个相机进行截图。
+
+    //这样的话，我就可截下，我的Avatar在游戏中场景中所看的画面了，UI界面（用一个专门的camera显示）什么的是不应该有的。
+    //要做到这一点，我们应该将分出一个camera来专门显示ui界面，用另一个camera相机来场景显示场景画面。
+    //然后，我们只对场景相机进行截屏就是了。所以这关键点就是：如何实现对某个相机进行截屏了。这里用到一个新的类是RenderTexture。
 
     /// <summary>  
     /// 对相机截图。   
@@ -81,11 +81,9 @@ public class CaptureScreenshot : MonoBehaviour
     {
         // 创建一个RenderTexture对象  
         RenderTexture rt = new RenderTexture((int)rect.width, (int)rect.height, 0);
-        
         // 临时设置相关相机的targetTexture为rt, 并手动渲染相关相机  
         camera.targetTexture = rt;
         camera.Render();
-        
         //ps: --- 如果这样加上第二个相机，可以实现只截图某几个指定的相机一起看到的图像。  
         //ps: camera2.targetTexture = rt;  
         //ps: camera2.Render();  
@@ -99,20 +97,14 @@ public class CaptureScreenshot : MonoBehaviour
 
         // 重置相关参数，以使用camera继续在屏幕上显示  
         camera.targetTexture = null;
-
         //ps: camera2.targetTexture = null;  
-
         RenderTexture.active = null; // JC: added to avoid errors  
         GameObject.Destroy(rt);
-        
         // 最后将这些纹理数据，成一个png图片文件  
         byte[] bytes = screenShot.EncodeToPNG();
         string filename = Application.dataPath + "/Screenshot1.png";
         System.IO.File.WriteAllBytes(filename, bytes);
-
         Debug.Log(string.Format("截屏了一张照片: {0}", filename));
-
-        AssetDatabase.Refresh();
 
         return screenShot;
     }

@@ -4,4 +4,10 @@
 .vs/ExportEffectPng/v15/.suo
 .vs/ExportEffectPng/v15/sqlite3/storage.ide
 *.ide
+<<<<<<< HEAD
 *.ide
+=======
+.vs/ExportEffectPng/v15/.suo
+.vs/ExportEffectPng/v15/.suo
+>>>>>>> b75393c3dec76d339975aafcd5b22e8d0273fd21
+/.vs
