@@ -88,7 +88,6 @@ public class ParticleExporter : MonoBehaviour
         int width = Screen.width;
         int height = Screen.height;
 
-        //Initialize and render textures
         RenderTexture blackCamRenderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
         RenderTexture whiteCamRenderTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
 
@@ -110,11 +109,10 @@ public class ParticleExporter : MonoBehaviour
         {
             Texture2D outputtex = new Texture2D(width, height, TextureFormat.ARGB32, false);
 
-            // Create Alpha from the difference between black and white camera renders
             for( int y = 0; y < outputtex.height; ++y )
-            { // each row
+            {
                 for( int x = 0; x < outputtex.width; ++x )
-                { // each column
+                {
                     float alpha;
                     alpha = texw.GetPixel(x, y).r - texb.GetPixel(x, y).r;
                     alpha = 1.0f - alpha;
@@ -133,11 +131,9 @@ public class ParticleExporter : MonoBehaviour
             }
 
 
-            // Encode the resulting output texture to a byte array then write to the file
             byte[] pngShot = outputtex.EncodeToPNG();
             File.WriteAllBytes(filename, pngShot);
 
-            // cleanup, otherwise will memory leak
             pngShot = null;
             RenderTexture.active = null;
             DestroyImmediate(outputtex);
@@ -153,7 +149,6 @@ public class ParticleExporter : MonoBehaviour
 
             System.GC.Collect();
 
-            // Reset the time scale, then move on to the next frame.
             Time.timeScale = originaltimescaleTime;
         }
     }
